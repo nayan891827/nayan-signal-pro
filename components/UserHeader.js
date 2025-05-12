@@ -7,17 +7,7 @@ export default function UserHeader({ user, logout }) {
         <h2>Welcome, {user.displayName || "User"}!</h2>
         <p>{user.email}</p>
       </div>
-      <button
-        onClick={logout}
-        style={{
-          padding: "8px 16px",
-          background: "#d33",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-      >
+      <button onClick={logout} style={{ padding: "8px 16px", background: "#d33", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
         Logout
       </button>
     </header>

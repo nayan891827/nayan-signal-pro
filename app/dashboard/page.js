@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [mode, setMode] = useState("live");
   const [signals, setSignals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user === undefined) return;
@@ -21,13 +22,20 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const loadSignals = async () => {
-      const data = await fetchSignals(mode);
-      setSignals(data);
+      try {
+        setLoading(true);
+        const data = await fetchSignals(mode);
+        setSignals(data);
+      } catch (error) {
+        console.error("Error fetching signals:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user) loadSignals();
   }, [mode, user]);
 
-  if (user === undefined) return <p>Loading authentication...</p>;
+  if (user === undefined || loading) return <p>Loading...</p>;
   if (!user) return <p>Redirecting...</p>;
 
   return (
@@ -35,7 +43,6 @@ export default function DashboardPage() {
       <UserHeader user={user} logout={logout} />
       <ModeSelector mode={mode} setMode={setMode} />
       <SignalPanel signals={signals} />
-
       <section style={{ marginTop: "2rem", background: "#f0f0f0", padding: "1rem", borderRadius: "6px" }}>
         <h3>Upcoming Features</h3>
         <ul>
