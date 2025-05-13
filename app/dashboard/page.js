@@ -3,10 +3,13 @@ import { useAuth } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchSignals } from "@/lib/firestore";
+import { fetchTrendlines } from "@/lib/firestore";
 
+import ZonePanel from "@/components/ZonePanel";
 import UserHeader from "@/components/UserHeader";
 import ModeSelector from "@/components/ModeSelector";
 import SignalPanel from "@/components/SignalPanel";
+import TrendlinePanel from "@/components/TrendlinePanel";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -14,11 +17,20 @@ export default function DashboardPage() {
   const [mode, setMode] = useState("live");
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [trends, setTrends] = useState([]);
 
   useEffect(() => {
     if (user === undefined) return;
     if (!user) router.push("/");
   }, [user]);
+
+useEffect(() => {
+  const loadTrends = async () => {
+    const trendData = await fetchTrendlines(mode);
+    setTrends(trendData);
+  };
+  if (user) loadTrends();
+}, [mode, user]);
 
   useEffect(() => {
     const loadSignals = async () => {
@@ -43,6 +55,8 @@ export default function DashboardPage() {
       <UserHeader user={user} logout={logout} />
       <ModeSelector mode={mode} setMode={setMode} />
       <SignalPanel signals={signals} />
+      <ZonePanel />
+      <TrendlinePanel trends={trends} />
       <section style={{ marginTop: "2rem", background: "#f0f0f0", padding: "1rem", borderRadius: "6px" }}>
         <h3>Upcoming Features</h3>
         <ul>
