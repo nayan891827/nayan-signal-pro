@@ -6,6 +6,7 @@ import { fetchSignals } from "@/lib/firestore";
 import { fetchTrendlines } from "@/lib/firestore";
 import { fetchCandlestickPatterns } from "@/lib/firestore";
 import { fetchChartPatterns } from "@/lib/firestore";
+import { fetchBreakouts } from "@/lib/firestore";
 
 import ZonePanel from "@/components/ZonePanel";
 import UserHeader from "@/components/UserHeader";
@@ -14,6 +15,7 @@ import SignalPanel from "@/components/SignalPanel";
 import TrendlinePanel from "@/components/TrendlinePanel";
 import CandlestickPanel from "@/components/CandlestickPanel";
 import ChartPatternPanel from "@/components/ChartPatternPanel";
+import BreakoutPanel from "@/components/BreakoutPanel";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -24,6 +26,8 @@ export default function DashboardPage() {
   const [trends, setTrends] = useState([]);
   const [candles, setCandles] = useState([]);
   const [chartPatterns, setChartPatterns] = useState([]);
+  const [breakouts, setBreakouts] = useState([]);
+
 
   useEffect(() => {
   const loadCandles = async () => {
@@ -54,6 +58,13 @@ useEffect(() => {
   if (user) loadChartPatterns();
 }, [mode, user]);
 
+useEffect(() => {
+  const loadBreakouts = async () => {
+    const data = await fetchBreakouts(mode);
+    setBreakouts(data);
+  };
+  if (user) loadBreakouts();
+}, [mode, user]);
 
   useEffect(() => {
     const loadSignals = async () => {
@@ -82,7 +93,8 @@ useEffect(() => {
       <TrendlinePanel trends={trends} />
       <CandlestickPanel patterns={candles} />
       <ChartPatternPanel patterns={chartPatterns} />
-      
+      <BreakoutPanel breakouts={breakouts} />
+
       <section style={{ marginTop: "2rem", background: "#f0f0f0", padding: "1rem", borderRadius: "6px" }}>
         <h3>Upcoming Features</h3>
         <ul>
