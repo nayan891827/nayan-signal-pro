@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchSignals } from "@/lib/firestore";
 import { fetchTrendlines } from "@/lib/firestore";
+import { fetchCandlestickPatterns } from "@/lib/firestore";
 
 import ZonePanel from "@/components/ZonePanel";
 import UserHeader from "@/components/UserHeader";
 import ModeSelector from "@/components/ModeSelector";
 import SignalPanel from "@/components/SignalPanel";
 import TrendlinePanel from "@/components/TrendlinePanel";
+import CandlestickPanel from "@/components/CandlestickPanel";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -18,6 +20,15 @@ export default function DashboardPage() {
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [trends, setTrends] = useState([]);
+  const [candles, setCandles] = useState([]);
+
+  useEffect(() => {
+  const loadCandles = async () => {
+    const data = await fetchCandlestickPatterns(mode);
+    setCandles(data);
+  };
+  if (user) loadCandles();
+}, [mode, user]);
 
   useEffect(() => {
     if (user === undefined) return;
@@ -57,6 +68,7 @@ useEffect(() => {
       <SignalPanel signals={signals} />
       <ZonePanel />
       <TrendlinePanel trends={trends} />
+      <CandlestickPanel patterns={candles} />
       <section style={{ marginTop: "2rem", background: "#f0f0f0", padding: "1rem", borderRadius: "6px" }}>
         <h3>Upcoming Features</h3>
         <ul>
