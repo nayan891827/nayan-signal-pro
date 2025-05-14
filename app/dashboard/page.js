@@ -8,6 +8,7 @@ import { fetchCandlestickPatterns } from "@/lib/firestore";
 import { fetchChartPatterns } from "@/lib/firestore";
 import { fetchBreakouts } from "@/lib/firestore";
 import { fetchFakeouts } from "@/lib/firestore";
+import { fetchLiquidityZones } from "@/lib/firestore";
 
 import ZonePanel from "@/components/ZonePanel";
 import UserHeader from "@/components/UserHeader";
@@ -18,6 +19,7 @@ import CandlestickPanel from "@/components/CandlestickPanel";
 import ChartPatternPanel from "@/components/ChartPatternPanel";
 import BreakoutPanel from "@/components/BreakoutPanel";
 import FakeoutPanel from "@/components/FakeoutPanel";
+import LiquidityPanel from "@/components/LiquidityPanel";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -30,7 +32,16 @@ export default function DashboardPage() {
   const [chartPatterns, setChartPatterns] = useState([]);
   const [breakouts, setBreakouts] = useState([]);
   const [fakeouts, setFakeouts] = useState([]);
+  const [zones, setZones] = useState([]);
 
+
+useEffect(() => {
+  const loadLiquidity = async () => {
+    const data = await fetchLiquidityZones(mode);
+    setZones(data);
+  };
+  if (user) loadLiquidity();
+}, [mode, user]);
 
   useEffect(() => {
   const loadFakeouts = async () => {
@@ -106,6 +117,7 @@ useEffect(() => {
       <ChartPatternPanel patterns={chartPatterns} />
       <BreakoutPanel breakouts={breakouts} />
       <FakeoutPanel fakeouts={fakeouts} />
+      <LiquidityPanel zones={zones} />
 
       <section style={{ marginTop: "2rem", background: "#f0f0f0", padding: "1rem", borderRadius: "6px" }}>
         <h3>Upcoming Features</h3>
